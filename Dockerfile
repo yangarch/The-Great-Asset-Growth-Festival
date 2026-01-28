@@ -12,5 +12,5 @@ COPY . .
 RUN mkdir -p /app/data
 
 # Expose ports
-EXPOSE 8000
+EXPOSE 8001
 EXPOSE 8501

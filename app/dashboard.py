@@ -8,7 +8,7 @@ import plotly.express as px
 load_dotenv()
 
 # Configuration
-API_URL = os.getenv("API_URL", "http://backend:8000/api/assets")
+API_URL = os.getenv("API_URL", "http://backend:8001/api/assets")
 START_AMOUNTS = {
     "KS": float(os.getenv("START_AMOUNT_KS", 1000000)),
     "DH": float(os.getenv("START_AMOUNT_DH", 1200000)),
