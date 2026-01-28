@@ -72,10 +72,12 @@ if not df.empty:
     cols = st.columns(len(latest_df))
     for i, (index, row) in enumerate(latest_df.iterrows()):
         with cols[i]:
+            start_amount = START_AMOUNTS.get(row['name'], 1)
+            net_profit = row['amount'] - start_amount
             st.metric(
                 label=f"{i+1}위 {row['name']}",
                 value=f"{row['growth_rate']:.2f}x",
-                delta=f"{row['amount']:,.0f} KRW"
+                delta=f"{net_profit:,.0f} KRW"
             )
 
     st.divider()
@@ -89,8 +91,24 @@ if not df.empty:
     # Sort for graph
     df_sorted = df.sort_values(by='date')
     
+    # 2. Add "Start" point (1.0) for better visualization
+    # We create a synthetic data point at "Earliest Date - 1 Day" with 1.0 growth
+    start_date = df_sorted['date'].min() - pd.Timedelta(days=1)
+    start_points = []
+    
+    for name in df['name'].unique():
+        start_points.append({
+            'name': name,
+            'date': start_date,
+            'amount': START_AMOUNTS.get(name, 0),
+            'growth_rate': 1.0
+        })
+    
+    df_start = pd.DataFrame(start_points)
+    df_chart = pd.concat([df_start, df_sorted], ignore_index=True).sort_values(by='date')
+    
     fig = px.line(
-        df_sorted, 
+        df_chart, 
         x='date', 
         y='growth_rate', 
         color='name',
