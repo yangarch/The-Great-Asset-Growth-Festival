@@ -61,3 +61,9 @@ curl -X 'POST' \
 ```bash
 curl -X 'GET' 'http://localhost:8001/api/assets'
 ```
+
+### 3. Reset Data (DELETE)
+To delete ALL records:
+```bash
+curl -X 'DELETE' 'http://localhost:8001/api/assets'
+```

@@ -163,3 +163,17 @@ else:
                         st.error(f"Error: {res.text}")
                 except Exception as e:
                      st.error(f"Failed to connect: {e}")
+
+    # 4. Admin / Reset
+    with st.expander("⚠️ Admin Zone (Reset Data)"):
+        st.warning("This will delete ALL data.")
+        if st.button("🔴 Reset All Data"):
+            try:
+                res = requests.delete(API_URL)
+                if res.status_code == 200:
+                    st.success("All data deleted. Refreshing...")
+                    st.rerun()
+                else:
+                    st.error(f"Failed to reset: {res.text}")
+            except Exception as e:
+                st.error(f"Error: {e}")
