@@ -10,7 +10,12 @@ load_dotenv()
 DB_PATH = os.getenv("DB_PATH", "sqlite:///./data/assets.db")
 if not DB_PATH.startswith("sqlite"):
     # If standard path format, ensure it has sqlite:/// prefix
-    DB_PATH = f"sqlite://{DB_PATH}"
+    if DB_PATH.startswith("/"):
+        # Absolute path needs 4 slashes: sqlite:////absolute/path
+        DB_PATH = f"sqlite:///{DB_PATH}"
+    else:
+        # Relative path needs 3 slashes: sqlite:///relative/path
+        DB_PATH = f"sqlite://{DB_PATH}"
 
 # Ensure directory exists for SQLite
 if DB_PATH.startswith("sqlite"):
