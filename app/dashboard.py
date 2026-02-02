@@ -10,13 +10,13 @@ load_dotenv()
 # Configuration
 API_URL = os.getenv("API_URL", "http://backend:8001/api/assets")
 START_AMOUNTS = {
-    "KS": float(os.getenv("START_AMOUNT_KS", 1000000)),
-    "DH": float(os.getenv("START_AMOUNT_DH", 1200000)),
-    "BH": float(os.getenv("START_AMOUNT_BH", 800000)),
-    "YJ": float(os.getenv("START_AMOUNT_YJ", 1500000)),
+    "KS": float(os.getenv("START_AMOUNT_KS", 2000000)),
+    "DH": float(os.getenv("START_AMOUNT_DH", 10000000)),
+    "BH": float(os.getenv("START_AMOUNT_BH", 2000000)),
+    "YJ": float(os.getenv("START_AMOUNT_YJ", 5000000)),
 }
 
-st.title("🎢 The Great Asset Growth Festival")
+st.title("🎢 None Festival")
 st.subheader("Leaderboard: Who is the Growth King?")
 
 # Fetch Data
@@ -120,60 +120,60 @@ if not df.empty:
     
     st.plotly_chart(fig, use_container_width=True)
 
-    # 3. Data Entry Form (Optional Helper)
-    with st.expander("📝 Add New Data"):
-        with st.form("add_data"):
-            name = st.selectbox("Name", ["KS", "DH", "BH", "YJ"])
-            date = st.date_input("Date")
-            amount = st.number_input("Current Amount (KRW)", min_value=0)
-            submitted = st.form_submit_button("Submit")
+#     # 3. Data Entry Form (Optional Helper)
+#     with st.expander("📝 Add New Data"):
+#         with st.form("add_data"):
+#             name = st.selectbox("Name", ["KS", "DH", "BH", "YJ"])
+#             date = st.date_input("Date")
+#             amount = st.number_input("Current Amount (KRW)", min_value=0)
+#             submitted = st.form_submit_button("Submit")
             
-            if submitted:
-                payload = {
-                    "name": name,
-                    "date": str(date),
-                    "amount": amount
-                }
-                res = requests.post(API_URL, json=payload)
-                if res.status_code == 200:
-                    st.success("Data Added! Refresh page.")
-                else:
-                    st.error(f"Error: {res.text}")
-else:
-    st.info("No data available yet. Use the API or form to add data.")
+#             if submitted:
+#                 payload = {
+#                     "name": name,
+#                     "date": str(date),
+#                     "amount": amount
+#                 }
+#                 res = requests.post(API_URL, json=payload)
+#                 if res.status_code == 200:
+#                     st.success("Data Added! Refresh page.")
+#                 else:
+#                     st.error(f"Error: {res.text}")
+# else:
+#     st.info("No data available yet. Use the API or form to add data.")
     
-    with st.expander("📝 Add First Data Entry", expanded=True):
-        with st.form("add_first_data"):
-            name = st.selectbox("Name", ["KS", "DH", "BH", "YJ"])
-            date = st.date_input("Date")
-            amount = st.number_input("Current Amount (KRW)", min_value=0)
-            submitted = st.form_submit_button("Submit")
+#     with st.expander("📝 Add First Data Entry", expanded=True):
+#         with st.form("add_first_data"):
+#             name = st.selectbox("Name", ["KS", "DH", "BH", "YJ"])
+#             date = st.date_input("Date")
+#             amount = st.number_input("Current Amount (KRW)", min_value=0)
+#             submitted = st.form_submit_button("Submit")
             
-            if submitted:
-                payload = {
-                    "name": name,
-                    "date": str(date),
-                    "amount": amount
-                }
-                try:
-                    res = requests.post(API_URL, json=payload)
-                    if res.status_code == 200:
-                        st.success("Data Added! Refresh page.")
-                    else:
-                        st.error(f"Error: {res.text}")
-                except Exception as e:
-                     st.error(f"Failed to connect: {e}")
+#             if submitted:
+#                 payload = {
+#                     "name": name,
+#                     "date": str(date),
+#                     "amount": amount
+#                 }
+#                 try:
+#                     res = requests.post(API_URL, json=payload)
+#                     if res.status_code == 200:
+#                         st.success("Data Added! Refresh page.")
+#                     else:
+#                         st.error(f"Error: {res.text}")
+#                 except Exception as e:
+#                      st.error(f"Failed to connect: {e}")
 
     # 4. Admin / Reset
-    with st.expander("⚠️ Admin Zone (Reset Data)"):
-        st.warning("This will delete ALL data.")
-        if st.button("🔴 Reset All Data"):
-            try:
-                res = requests.delete(API_URL)
-                if res.status_code == 200:
-                    st.success("All data deleted. Refreshing...")
-                    st.rerun()
-                else:
-                    st.error(f"Failed to reset: {res.text}")
-            except Exception as e:
-                st.error(f"Error: {e}")
+    # with st.expander("⚠️ Admin Zone (Reset Data)"):
+    #     st.warning("This will delete ALL data.")
+    #     if st.button("🔴 Reset All Data"):
+    #         try:
+    #             res = requests.delete(API_URL)
+    #             if res.status_code == 200:
+    #                 st.success("All data deleted. Refreshing...")
+    #                 st.rerun()
+    #             else:
+    #                 st.error(f"Failed to reset: {res.text}")
+    #         except Exception as e:
+    #             st.error(f"Error: {e}")
