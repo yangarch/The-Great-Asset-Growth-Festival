@@ -1,0 +1,41 @@
+name: FastAPI Docker CD
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  deploy:
+    # 1단계에서 설정한 self-hosted 라벨을 사용합니다.
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout master branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2 # 변경 파일 비교를 위해 이전 커밋 기록도 가져옵니다.
+
+      - name: Check for configuration changes
+        id: check_changes
+        run: |
+          # 빌드가 필요한 주요 파일들이 변경되었는지 확인
+          # Dockerfile, docker-compose.yml, requirements.txt 중 하나라도 변경되면 build_needed를 true로 설정
+          if git diff --name-only HEAD^ HEAD | grep -E 'Dockerfile|docker-compose.yml|requirements.txt'; then
+            echo "build_needed=true" >> $GITHUB_OUTPUT
+          else
+            echo "build_needed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy with Docker Compose
+        run: |
+          if [ "${{ steps.check_changes.outputs.build_needed }}" == "true" ]; then
+            echo "🚀 Major changes detected. Rebuilding and restarting..."
+            docker compose up -d --build
+          else
+            echo "⚡ Minor changes detected. Updating code and restarting container..."
+            # --no-deps: 의존성 컨테이너는 건드리지 않고 해당 서비스만 재시작
+            docker compose up -d --no-deps fastapi-server
+          fi
+
+      - name: Clean up unused images
+        run: docker image prune -f
