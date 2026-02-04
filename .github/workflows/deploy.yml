@@ -29,12 +29,13 @@ jobs:
       - name: Deploy with Docker Compose
         run: |
           if [ "${{ steps.check_changes.outputs.build_needed }}" == "true" ]; then
-            echo "🚀 Major changes detected. Rebuilding and restarting..."
+            echo "🚀 Major changes detected. Rebuilding all services..."
             docker compose up -d --build
           else
-            echo "⚡ Minor changes detected. Updating code and restarting container..."
-            # --no-deps: 의존성 컨테이너는 건드리지 않고 해당 서비스만 재시작
-            docker compose up -d --no-deps fastapi-server
+            echo "⚡ Minor changes detected. Smart updating..."
+            # 서비스 이름을 특정하지 않으면, docker compose가 알아서 
+            # 코드/설정이 변경된 컨테이너만 감지해서 재시작합니다.
+            docker compose up -d
           fi
 
       - name: Clean up unused images
