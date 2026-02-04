@@ -9,7 +9,7 @@ services:
       - "8001:8001"
     volumes:
       - ./app:/app
-      - ./data:/app/data
+      - /home/data/The-Great-Asset-Growth-Festival/data:/app/data
     env_file:
       - .env
     environment:
