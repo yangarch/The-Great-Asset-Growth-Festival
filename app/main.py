@@ -28,4 +28,4 @@ def read_assets(skip: int = 0, limit: int = 1000, db: Session = Depends(database
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to The Great Asset Growth Festival API"}
+    return {"message": "Welcome to The Great Asset Growth Festival API And UPDATED AT 0204"}
