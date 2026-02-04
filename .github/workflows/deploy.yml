@@ -2,7 +2,7 @@ name: FastAPI Docker CD
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   deploy:
@@ -10,7 +10,7 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Checkout master branch
+      - name: Checkout main branch
         uses: actions/checkout@v4
         with:
           fetch-depth: 2 # 변경 파일 비교를 위해 이전 커밋 기록도 가져옵니다.
