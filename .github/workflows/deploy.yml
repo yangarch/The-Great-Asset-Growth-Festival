@@ -6,49 +6,23 @@ on:
 
 jobs:
   deploy:
-    # 1단계에서 설정한 self-hosted 라벨을 사용합니다.
     runs-on: self-hosted
 
     steps:
       - name: Fix permissions before checkout
-        # DB 파일 권한 때문에 checkout이 실패하는 것을 방지하기 위해 소유권 조정
+        # DB 파일 권한 때문에 checkout이 실패하는 것을 방지
         run: sudo chown -R yangarch:yangarch ${GITHUB_WORKSPACE} || true
-
-      - name: Checkout master branch
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-          # 핵심: 기존 파일을 지우지 않고 덮어쓰기만 시도하도록 설정 (DB 보존)
-          clean: false 
-
-      - name: Check for configuration changes
-        id: check_changes
-        run: |
-          if git diff --name-only HEAD^ HEAD | grep -E 'Dockerfile|docker-compose.yml|requirements.txt'; then
-            echo "build_needed=true" >> $GITHUB_OUTPUT
-          else
-            echo "build_needed=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Deploy with Docker Compose
-        run: |
-          if [ "${{ steps.check_changes.outputs.build_needed }}" == "true" ]; then
-            docker compose up -d --build
-          else
-            # 컨테이너만 스마트하게 재시작 (볼륨으로 연결된 DB는 그대로 유지됨)
-            docker compose up -d
-          fi
 
       - name: Checkout main branch
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2 # 변경 파일 비교를 위해 이전 커밋 기록도 가져옵니다.
+          fetch-depth: 2
+          clean: false # 중요: assets.db 등 기존 파일을 지우지 않음
 
       - name: Check for configuration changes
-        id: check_changes
+        id: check_changes_step
         run: |
-          # 빌드가 필요한 주요 파일들이 변경되었는지 확인
-          # Dockerfile, docker-compose.yml, requirements.txt 중 하나라도 변경되면 build_needed를 true로 설정
+          # Docker 빌드가 필요한 파일 변경 감지
           if git diff --name-only HEAD^ HEAD | grep -E 'Dockerfile|docker-compose.yml|requirements.txt'; then
             echo "build_needed=true" >> $GITHUB_OUTPUT
           else
@@ -57,13 +31,12 @@ jobs:
 
       - name: Deploy with Docker Compose
         run: |
-          if [ "${{ steps.check_changes.outputs.build_needed }}" == "true" ]; then
-            echo "🚀 Major changes detected. Rebuilding all services..."
+          if [ "${{ steps.check_changes_step.outputs.build_needed }}" == "true" ]; then
+            echo "🚀 Major changes detected. Rebuilding..."
             docker compose up -d --build
           else
             echo "⚡ Minor changes detected. Smart updating..."
-            # 서비스 이름을 특정하지 않으면, docker compose가 알아서 
-            # 코드/설정이 변경된 컨테이너만 감지해서 재시작합니다.
+            # 서비스 이름을 특정하지 않아도 변경된 코드만 반영됩니다.
             docker compose up -d
           fi
 
