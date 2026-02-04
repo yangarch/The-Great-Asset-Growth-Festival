@@ -17,7 +17,7 @@ START_AMOUNTS = {
 }
 
 st.title("🎢 None Festival")
-st.subheader("Leaderboard: Who is the Growth King? :) ?")
+st.subheader("Leaderboard: Who is the Growth King? :)")
 
 # Fetch Data
 try:
