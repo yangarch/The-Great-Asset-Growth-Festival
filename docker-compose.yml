@@ -3,7 +3,7 @@ version: '3.8'
 services:
   backend:
     build: .
-    command: uvicorn main:app --host 0.0.0.0 --port 8001
+    command: sh -c "export PYTHONPATH=$PYTHONPATH:/app && uvicorn main:app --host 0.0.0.0 --port 8001"
     ports:
       - "8001:8001"
     volumes:
