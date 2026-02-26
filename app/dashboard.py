@@ -57,6 +57,12 @@ if not df.empty:
     # Process Data
     df['date'] = pd.to_datetime(df['date'])
     
+    # Keep only the latest entry per user per day
+    if 'id' in df.columns:
+        df = df.sort_values('id').drop_duplicates(subset=['name', 'date'], keep='last')
+    else:
+        df = df.drop_duplicates(subset=['name', 'date'], keep='last')
+    
     # Calculate Growth Rate
     def calculate_growth(row):
         start = START_AMOUNTS.get(row['name'], 1)
