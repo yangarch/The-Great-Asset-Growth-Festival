@@ -4,6 +4,7 @@ import requests
 import os
 from dotenv import load_dotenv
 import plotly.express as px
+import yfinance as yf
 
 load_dotenv()
 
@@ -114,16 +115,48 @@ if not df.empty:
     df_chart = pd.concat([df_start, df_sorted], ignore_index=True).sort_values(by='date')
     
     fig = px.line(
-        df_chart, 
-        x='date', 
-        y='growth_rate', 
+        df_chart,
+        x='date',
+        y='growth_rate',
         color='name',
         markers=True,
         title="Asset Growth Rate Over Time (Base=1.0)"
     )
+
+    # KOSPI 200 (KODEX 069500.KS) 비교선 추가
+    KOSPI_START_DATE = "2026-02-01"
+    try:
+        kospi_raw = yf.download("069500.KS", start=KOSPI_START_DATE, progress=False, auto_adjust=True)
+        if not kospi_raw.empty:
+            kospi = kospi_raw[["Close"]].copy()
+            kospi.index = pd.to_datetime(kospi.index)
+            kospi.index = kospi.index.tz_localize(None)
+            kospi.columns = ["close"]
+            kospi = kospi.sort_index()
+
+            # 시작일 기준 정규화
+            start_price = kospi.iloc[0]["close"]
+            kospi["growth_rate"] = kospi["close"] / start_price
+
+            # 시작점(1.0) 추가
+            start_row = pd.DataFrame([{
+                "growth_rate": 1.0
+            }], index=[pd.Timestamp(KOSPI_START_DATE) - pd.Timedelta(days=1)])
+            kospi = pd.concat([start_row, kospi[["growth_rate"]]]).sort_index()
+
+            fig.add_scatter(
+                x=kospi.index,
+                y=kospi["growth_rate"],
+                mode="lines",
+                name="KOSPI 200",
+                line=dict(color="gray", dash="dot", width=2),
+            )
+    except Exception as e:
+        st.warning(f"⚠️ KOSPI 200 데이터를 불러오지 못했습니다: {e}")
+
     # Add horizontal line at 1.0
-    fig.add_hline(y=1.0, line_dash="dash", line_color="gray", annotation_text="Start")
-    
+    fig.add_hline(y=1.0, line_dash="dash", line_color="lightgray", annotation_text="Start")
+
     st.plotly_chart(fig, use_container_width=True)
 
 #     # 3. Data Entry Form (Optional Helper)
