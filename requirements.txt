@@ -8,3 +8,4 @@ python-dotenv
 requests
 plotly
 yfinance
+python-telegram-bot>=20.0
