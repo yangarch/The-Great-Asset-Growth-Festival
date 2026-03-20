@@ -85,7 +85,7 @@ if not df.empty:
             net_profit = row['amount'] - start_amount
             st.metric(
                 label=f"{i+1}위 {row['name']}",
-                value=f"{row['growth_rate']:.2f}x",
+                value=f"{(row['growth_rate']-1)*100:.1f}%",
                 delta=f"{net_profit:,.0f} KRW"
             )
 
