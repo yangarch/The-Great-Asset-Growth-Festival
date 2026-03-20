@@ -8,6 +8,8 @@ import yfinance as yf
 
 load_dotenv()
 
+st.set_page_config(page_title="NJC DASHBOARD", page_icon="📈")
+
 # Configuration
 API_URL = os.getenv("API_URL", "http://backend:8001/api/assets")
 START_AMOUNTS = {
