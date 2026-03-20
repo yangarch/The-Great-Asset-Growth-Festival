@@ -160,6 +160,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     if not user_request:
         return
 
+    logger.info("[요청] %s (%s): %s", update.effective_user.username, update.effective_user.id, user_request)
     await update.message.reply_text("⏳ Claude Code 실행 중... (최대 5분 소요)")
 
     # Claude Code 실행
@@ -181,7 +182,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     )
 
     if committed:
+        logger.info("[push] %s", commit_msg)
         await update.message.reply_text(f"✅ {git_result}")
+    else:
+        logger.info("[스킵] 변경사항 없음")
 
 
 def main() -> None:

@@ -116,14 +116,19 @@ if not df.empty:
     df_start = pd.DataFrame(start_points)
     df_chart = pd.concat([df_start, df_sorted], ignore_index=True).sort_values(by='date')
     
+    df_chart = df_chart.copy()
+    df_chart['growth_rate'] = (df_chart['growth_rate'] - 1) * 100
+
     fig = px.line(
         df_chart,
         x='date',
         y='growth_rate',
         color='name',
         markers=True,
-        title="Asset Growth Rate Over Time (Base=1.0)"
+        title="Asset Growth Rate Over Time",
+        labels={'growth_rate': 'Growth (%)'}
     )
+    fig.update_layout(yaxis_ticksuffix="%")
 
     # KOSPI 200 (KODEX 069500.KS) 비교선 추가
     KOSPI_START_DATE = "2026-02-01"
@@ -138,11 +143,11 @@ if not df.empty:
 
             # 시작일 기준 정규화
             start_price = kospi.iloc[0]["close"]
-            kospi["growth_rate"] = kospi["close"] / start_price
+            kospi["growth_rate"] = (kospi["close"] / start_price - 1) * 100
 
-            # 시작점(1.0) 추가
+            # 시작점(0.0) 추가
             start_row = pd.DataFrame([{
-                "growth_rate": 1.0
+                "growth_rate": 0.0
             }], index=[pd.Timestamp(KOSPI_START_DATE) - pd.Timedelta(days=1)])
             kospi = pd.concat([start_row, kospi[["growth_rate"]]]).sort_index()
 
@@ -157,7 +162,7 @@ if not df.empty:
         st.warning(f"⚠️ KOSPI 200 데이터를 불러오지 못했습니다: {e}")
 
     # Add horizontal line at 1.0
-    fig.add_hline(y=1.0, line_dash="dash", line_color="lightgray", annotation_text="Start")
+    fig.add_hline(y=0.0, line_dash="dash", line_color="lightgray", annotation_text="Start")
 
     st.plotly_chart(fig, use_container_width=True)
 
