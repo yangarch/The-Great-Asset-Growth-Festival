@@ -119,6 +119,14 @@ if not df.empty:
     df_chart = df_chart.copy()
     df_chart['growth_rate'] = (df_chart['growth_rate'] - 1) * 100
 
+    # 가장 최근 날짜 기준 growth_rate 순위 (KOSPI 200 제외)
+    non_kospi_latest = df_chart[df_chart['name'] != 'KOSPI 200'].sort_values('date').groupby('name').tail(1)
+    crown_name = non_kospi_latest.sort_values('growth_rate', ascending=False).iloc[0]['name']
+    turtle_name = non_kospi_latest.sort_values('growth_rate', ascending=True).iloc[0]['name']
+    df_chart['name'] = df_chart['name'].apply(
+        lambda n: f"👑 {n}" if n == crown_name else (f"🐢 {n}" if n == turtle_name else n)
+    )
+
     fig = px.line(
         df_chart,
         x='date',
