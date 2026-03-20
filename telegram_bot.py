@@ -89,6 +89,7 @@ def run_claude(prompt: str) -> tuple[str, bool]:
             capture_output=True,
             text=True,
             timeout=300,  # 5분 타임아웃
+            stdin=subprocess.DEVNULL,  # 터미널 stdin 격리
         )
         output = result.stdout.strip()
         if result.returncode != 0:
@@ -173,14 +174,14 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     for part in split_message(claude_output):
         await update.message.reply_text(part)
 
-    # git commit & push
+    # git commit & push (변경사항 있을 때만 알림)
     commit_msg = f"[telegram] {user_request[:72]}"
     git_result, committed = await loop.run_in_executor(
         None, git_commit_and_push, commit_msg
     )
 
-    status_icon = "✅" if committed else "ℹ️"
-    await update.message.reply_text(f"{status_icon} {git_result}")
+    if committed:
+        await update.message.reply_text(f"✅ {git_result}")
 
 
 def main() -> None:
