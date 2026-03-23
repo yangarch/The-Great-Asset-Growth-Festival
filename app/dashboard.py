@@ -237,19 +237,19 @@ if not df.empty:
     try:
         kospi_vol_raw = yf.download("069500.KS", start=KOSPI_START_DATE, progress=False, auto_adjust=True)
         if not kospi_vol_raw.empty:
-            kospi_close = kospi_vol_raw["Close"].dropna()
+            kospi_close = kospi_vol_raw["Close"].squeeze().dropna()
             kospi_returns = kospi_close.pct_change().dropna()
-            kospi_vol = kospi_returns.std() * 100
-            kospi_growth = (kospi_close.iloc[-1] / kospi_close.iloc[0] - 1) * 100
+            kospi_vol = float(kospi_returns.std()) * 100
+            kospi_growth = float((kospi_close.iloc[-1] / kospi_close.iloc[0] - 1) * 100)
             volatility_rows.append({
                 "이름": "KOSPI 200",
                 "현재 수익률": f"{kospi_growth:+.2f}%",
                 "일간 변동성 (std)": f"{kospi_vol:.2f}%",
                 "_volatility_raw": kospi_vol,
-                "_growth_raw": float(kospi_growth),
+                "_growth_raw": kospi_growth,
             })
-    except Exception:
-        pass
+    except Exception as e:
+        st.warning(f"⚠️ KOSPI 200 변동성 계산 실패: {e}")
 
     # USD/KRW 변동성
     try:
