@@ -199,6 +199,36 @@ if not df.empty:
     except Exception as e:
         st.warning(f"⚠️ USD/KRW 데이터를 불러오지 못했습니다: {e}")
 
+    # Bitcoin 비교선 추가
+    try:
+        btc_raw = yf.download("BTC-USD", start=KOSPI_START_DATE, progress=False, auto_adjust=True)
+        if not btc_raw.empty:
+            btc = btc_raw[["Close"]].copy()
+            btc.index = pd.to_datetime(btc.index)
+            btc.index = btc.index.tz_localize(None)
+            btc.columns = ["close"]
+            btc = btc.sort_index()
+
+            # 시작일 기준 정규화
+            btc_start_price = btc.iloc[0]["close"]
+            btc["growth_rate"] = (btc["close"] / btc_start_price - 1) * 100
+
+            # 시작점(0.0) 추가
+            btc_start_row = pd.DataFrame([{
+                "growth_rate": 0.0
+            }], index=[pd.Timestamp(KOSPI_START_DATE) - pd.Timedelta(days=1)])
+            btc = pd.concat([btc_start_row, btc[["growth_rate"]]]).sort_index()
+
+            fig.add_scatter(
+                x=btc.index,
+                y=btc["growth_rate"],
+                mode="lines",
+                name="Bitcoin",
+                line=dict(color="orange", dash="dot", width=2),
+            )
+    except Exception as e:
+        st.warning(f"⚠️ Bitcoin 데이터를 불러오지 못했습니다: {e}")
+
     # Add horizontal line at 1.0
     fig.add_hline(y=0.0, line_dash="dash", line_color="lightgray", annotation_text="Start")
 
@@ -265,6 +295,24 @@ if not df.empty:
                 "일간 변동성 (std)": f"{usd_vol:.2f}%",
                 "_volatility_raw": usd_vol,
                 "_growth_raw": float(usd_growth),
+            })
+    except Exception:
+        pass
+
+    # Bitcoin 변동성
+    try:
+        btc_vol_raw = yf.download("BTC-USD", start=KOSPI_START_DATE, progress=False, auto_adjust=True)
+        if not btc_vol_raw.empty:
+            btc_close = btc_vol_raw["Close"].squeeze().dropna()
+            btc_returns = btc_close.pct_change().dropna()
+            btc_vol = float(btc_returns.std()) * 100
+            btc_growth = float((btc_close.iloc[-1] / btc_close.iloc[0] - 1) * 100)
+            volatility_rows.append({
+                "이름": "Bitcoin",
+                "현재 수익률": f"{btc_growth:+.2f}%",
+                "일간 변동성 (std)": f"{btc_vol:.2f}%",
+                "_volatility_raw": btc_vol,
+                "_growth_raw": btc_growth,
             })
     except Exception:
         pass
