@@ -46,3 +46,17 @@
 2026-03-23 21:52:45,648 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
 2026-03-23 21:52:55,985 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
 2026-03-23 21:53:03,972 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/sendMessage "HTTP/1.1 200 OK"
+2026-03-23 21:53:06,331 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
+2026-03-23 21:53:06,833 - __main__ - INFO - [push] [telegram] 그 코스피200도 비교군이니까 같이 변동성비교할수잇게 표에 추가해줘
+2026-03-23 21:53:07,259 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/sendMessage "HTTP/1.1 200 OK"
+2026-03-23 21:53:16,570 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
+2026-03-23 21:53:26,911 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
+2026-03-23 21:53:37,235 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
+2026-03-23 21:53:45,193 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
+2026-03-23 21:53:45,195 - __main__ - INFO - [요청] None (1791706287): 실제 표에 안나와 세명만 나와
+2026-03-23 21:53:46,148 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/sendMessage "HTTP/1.1 200 OK"
+2026-03-23 21:53:55,437 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
+2026-03-23 21:54:05,723 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
+2026-03-23 21:54:16,063 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
+2026-03-23 21:54:26,405 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
+2026-03-23 21:54:29,555 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/sendMessage "HTTP/1.1 200 OK"

@@ -213,11 +213,18 @@ if not df.empty:
     # 참가자별 변동성 계산
     for name in df['name'].unique():
         user_df = df[df['name'] == name].sort_values('date')
+        latest_growth = (user_df.iloc[-1]['growth_rate'] - 1) * 100
         if len(user_df) < 2:
+            volatility_rows.append({
+                "이름": name,
+                "현재 수익률": f"{latest_growth:+.2f}%",
+                "일간 변동성 (std)": "N/A",
+                "_volatility_raw": float('inf'),
+                "_growth_raw": latest_growth,
+            })
             continue
         daily_returns = user_df['growth_rate'].pct_change().dropna()
         volatility = daily_returns.std() * 100  # %
-        latest_growth = (user_df.iloc[-1]['growth_rate'] - 1) * 100
         volatility_rows.append({
             "이름": name,
             "현재 수익률": f"{latest_growth:+.2f}%",
