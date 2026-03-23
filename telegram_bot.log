@@ -11,3 +11,21 @@
 2026-03-23 21:48:44,798 - __main__ - INFO - [요청] None (1791706287): hi
 2026-03-23 21:48:45,743 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/sendMessage "HTTP/1.1 200 OK"
 2026-03-23 21:48:49,812 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/sendMessage "HTTP/1.1 200 OK"
+2026-03-23 21:48:52,879 - __main__ - INFO - [push] [telegram] hi
+2026-03-23 21:48:53,313 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/sendMessage "HTTP/1.1 200 OK"
+2026-03-23 21:48:55,240 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
+2026-03-23 21:49:05,478 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
+2026-03-23 21:49:15,716 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
+2026-03-23 21:49:25,959 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
+2026-03-23 21:49:36,200 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
+2026-03-23 21:49:46,645 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
+2026-03-23 21:49:57,090 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
+2026-03-23 21:50:07,344 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
+2026-03-23 21:50:12,860 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
+2026-03-23 21:50:12,863 - __main__ - INFO - [요청] None (1791706287): 변동성 지표로 넣어죠 대시보드  비교할때 표로 정리해서 그래프에는 말고
+2026-03-23 21:50:13,819 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/sendMessage "HTTP/1.1 200 OK"
+2026-03-23 21:50:23,306 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
+2026-03-23 21:50:33,647 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
+2026-03-23 21:50:43,967 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
+2026-03-23 21:50:54,381 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
+2026-03-23 21:50:56,809 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/sendMessage "HTTP/1.1 200 OK"

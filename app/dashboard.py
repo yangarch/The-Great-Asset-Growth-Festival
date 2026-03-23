@@ -204,6 +204,69 @@ if not df.empty:
 
     st.plotly_chart(fig, use_container_width=True)
 
+    # 3. Volatility Comparison Table
+    st.divider()
+    st.subheader("변동성 비교 📊")
+
+    volatility_rows = []
+
+    # 참가자별 변동성 계산
+    for name in df['name'].unique():
+        user_df = df[df['name'] == name].sort_values('date')
+        if len(user_df) < 2:
+            continue
+        daily_returns = user_df['growth_rate'].pct_change().dropna()
+        volatility = daily_returns.std() * 100  # %
+        latest_growth = (user_df.iloc[-1]['growth_rate'] - 1) * 100
+        volatility_rows.append({
+            "이름": name,
+            "현재 수익률": f"{latest_growth:+.2f}%",
+            "일간 변동성 (std)": f"{volatility:.2f}%",
+            "_volatility_raw": volatility,
+            "_growth_raw": latest_growth,
+        })
+
+    # KOSPI 200 변동성
+    try:
+        kospi_vol_raw = yf.download("069500.KS", start=KOSPI_START_DATE, progress=False, auto_adjust=True)
+        if not kospi_vol_raw.empty:
+            kospi_close = kospi_vol_raw["Close"].dropna()
+            kospi_returns = kospi_close.pct_change().dropna()
+            kospi_vol = kospi_returns.std() * 100
+            kospi_growth = (kospi_close.iloc[-1] / kospi_close.iloc[0] - 1) * 100
+            volatility_rows.append({
+                "이름": "KOSPI 200",
+                "현재 수익률": f"{kospi_growth:+.2f}%",
+                "일간 변동성 (std)": f"{kospi_vol:.2f}%",
+                "_volatility_raw": kospi_vol,
+                "_growth_raw": float(kospi_growth),
+            })
+    except Exception:
+        pass
+
+    # USD/KRW 변동성
+    try:
+        usd_vol_raw = yf.download("USDKRW=X", start=KOSPI_START_DATE, progress=False, auto_adjust=True)
+        if not usd_vol_raw.empty:
+            usd_close = usd_vol_raw["Close"].dropna()
+            usd_returns = usd_close.pct_change().dropna()
+            usd_vol = usd_returns.std() * 100
+            usd_growth = (usd_close.iloc[-1] / usd_close.iloc[0] - 1) * 100
+            volatility_rows.append({
+                "이름": "USD/KRW",
+                "현재 수익률": f"{usd_growth:+.2f}%",
+                "일간 변동성 (std)": f"{usd_vol:.2f}%",
+                "_volatility_raw": usd_vol,
+                "_growth_raw": float(usd_growth),
+            })
+    except Exception:
+        pass
+
+    if volatility_rows:
+        vol_df = pd.DataFrame(volatility_rows).sort_values("_volatility_raw", ascending=True)
+        vol_df = vol_df.drop(columns=["_volatility_raw", "_growth_raw"])
+        st.table(vol_df.reset_index(drop=True))
+
 #     # 3. Data Entry Form (Optional Helper)
 #     with st.expander("📝 Add New Data"):
 #         with st.form("add_data"):
