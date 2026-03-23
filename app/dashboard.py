@@ -318,7 +318,7 @@ if not df.empty:
         pass
 
     if volatility_rows:
-        vol_df = pd.DataFrame(volatility_rows).sort_values("_volatility_raw", ascending=True)
+        vol_df = pd.DataFrame(volatility_rows).sort_values("_growth_raw", ascending=False)
         vol_df = vol_df.drop(columns=["_volatility_raw", "_growth_raw"])
         st.table(vol_df.reset_index(drop=True))
 
