@@ -169,6 +169,36 @@ if not df.empty:
     except Exception as e:
         st.warning(f"⚠️ KOSPI 200 데이터를 불러오지 못했습니다: {e}")
 
+    # USD/KRW 비교선 추가 (달러 매수 시나리오)
+    try:
+        usd_raw = yf.download("USDKRW=X", start=KOSPI_START_DATE, progress=False, auto_adjust=True)
+        if not usd_raw.empty:
+            usd = usd_raw[["Close"]].copy()
+            usd.index = pd.to_datetime(usd.index)
+            usd.index = usd.index.tz_localize(None)
+            usd.columns = ["close"]
+            usd = usd.sort_index()
+
+            # 시작일 기준 정규화
+            usd_start_price = usd.iloc[0]["close"]
+            usd["growth_rate"] = (usd["close"] / usd_start_price - 1) * 100
+
+            # 시작점(0.0) 추가
+            usd_start_row = pd.DataFrame([{
+                "growth_rate": 0.0
+            }], index=[pd.Timestamp(KOSPI_START_DATE) - pd.Timedelta(days=1)])
+            usd = pd.concat([usd_start_row, usd[["growth_rate"]]]).sort_index()
+
+            fig.add_scatter(
+                x=usd.index,
+                y=usd["growth_rate"],
+                mode="lines",
+                name="USD/KRW",
+                line=dict(color="green", dash="dot", width=2),
+            )
+    except Exception as e:
+        st.warning(f"⚠️ USD/KRW 데이터를 불러오지 못했습니다: {e}")
+
     # Add horizontal line at 1.0
     fig.add_hline(y=0.0, line_dash="dash", line_color="lightgray", annotation_text="Start")
 
