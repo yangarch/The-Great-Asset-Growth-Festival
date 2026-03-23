@@ -320,7 +320,9 @@ if not df.empty:
     if volatility_rows:
         vol_df = pd.DataFrame(volatility_rows).sort_values("_growth_raw", ascending=False)
         vol_df = vol_df.drop(columns=["_volatility_raw", "_growth_raw"])
-        st.table(vol_df.reset_index(drop=True))
+        vol_df_display = vol_df.reset_index(drop=True)
+        vol_df_display.index = vol_df_display.index + 1
+        st.table(vol_df_display)
 
 #     # 3. Data Entry Form (Optional Helper)
 #     with st.expander("📝 Add New Data"):
