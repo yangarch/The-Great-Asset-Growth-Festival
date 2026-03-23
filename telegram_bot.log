@@ -1,0 +1,13 @@
+2026-03-23 21:47:49,494 - __main__ - INFO - 봇 시작됨 (프로젝트: /Users/archclaw/Project/The-Great-Asset-Growth-Festival)
+2026-03-23 21:47:50,203 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getMe "HTTP/1.1 200 OK"
+2026-03-23 21:47:50,436 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/deleteWebhook "HTTP/1.1 200 OK"
+2026-03-23 21:47:50,440 - telegram.ext.Application - INFO - Application started
+2026-03-23 21:48:01,274 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
+2026-03-23 21:48:11,719 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
+2026-03-23 21:48:22,266 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
+2026-03-23 21:48:32,712 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
+2026-03-23 21:48:43,156 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
+2026-03-23 21:48:44,795 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/getUpdates "HTTP/1.1 200 OK"
+2026-03-23 21:48:44,798 - __main__ - INFO - [요청] None (1791706287): hi
+2026-03-23 21:48:45,743 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/sendMessage "HTTP/1.1 200 OK"
+2026-03-23 21:48:49,812 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8764110529:AAEF-fVM-IUeoWCOf--sle45e0KFHcLdkSg/sendMessage "HTTP/1.1 200 OK"
