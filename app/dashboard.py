@@ -249,16 +249,24 @@ if not df.empty:
                 "이름": name,
                 "현재 수익률": f"{latest_growth:+.2f}%",
                 "일간 변동성 (std)": "N/A",
+                "MDD": "N/A",
+                "샤프지수": "N/A",
                 "_volatility_raw": float('inf'),
                 "_growth_raw": latest_growth,
             })
             continue
         daily_returns = user_df['growth_rate'].pct_change().dropna()
         volatility = daily_returns.std() * 100  # %
+        cumulative = user_df['growth_rate']
+        running_max = cumulative.cummax()
+        mdd = ((cumulative - running_max) / running_max).min() * 100
+        sharpe = (daily_returns.mean() / daily_returns.std()) * (252 ** 0.5) if daily_returns.std() > 0 else 0
         volatility_rows.append({
             "이름": name,
             "현재 수익률": f"{latest_growth:+.2f}%",
             "일간 변동성 (std)": f"{volatility:.2f}%",
+            "MDD": f"{mdd:.2f}%",
+            "샤프지수": f"{sharpe:.2f}",
             "_volatility_raw": volatility,
             "_growth_raw": latest_growth,
         })
@@ -271,10 +279,15 @@ if not df.empty:
             kospi_returns = kospi_close.pct_change().dropna()
             kospi_vol = float(kospi_returns.std()) * 100
             kospi_growth = float((kospi_close.iloc[-1] / kospi_close.iloc[0] - 1) * 100)
+            kospi_running_max = kospi_close.cummax()
+            kospi_mdd = float(((kospi_close - kospi_running_max) / kospi_running_max).min() * 100)
+            kospi_sharpe = float((kospi_returns.mean() / kospi_returns.std()) * (252 ** 0.5)) if kospi_returns.std() > 0 else 0
             volatility_rows.append({
                 "이름": "KOSPI 200",
                 "현재 수익률": f"{kospi_growth:+.2f}%",
                 "일간 변동성 (std)": f"{kospi_vol:.2f}%",
+                "MDD": f"{kospi_mdd:.2f}%",
+                "샤프지수": f"{kospi_sharpe:.2f}",
                 "_volatility_raw": kospi_vol,
                 "_growth_raw": kospi_growth,
             })
@@ -289,10 +302,15 @@ if not df.empty:
             usd_returns = usd_close.pct_change().dropna()
             usd_vol = usd_returns.std() * 100
             usd_growth = (usd_close.iloc[-1] / usd_close.iloc[0] - 1) * 100
+            usd_running_max = usd_close.cummax()
+            usd_mdd = float(((usd_close - usd_running_max) / usd_running_max).min() * 100)
+            usd_sharpe = float((usd_returns.mean() / usd_returns.std()) * (252 ** 0.5)) if float(usd_returns.std()) > 0 else 0
             volatility_rows.append({
                 "이름": "USD/KRW",
                 "현재 수익률": f"{usd_growth:+.2f}%",
                 "일간 변동성 (std)": f"{usd_vol:.2f}%",
+                "MDD": f"{usd_mdd:.2f}%",
+                "샤프지수": f"{usd_sharpe:.2f}",
                 "_volatility_raw": usd_vol,
                 "_growth_raw": float(usd_growth),
             })
@@ -307,10 +325,15 @@ if not df.empty:
             btc_returns = btc_close.pct_change().dropna()
             btc_vol = float(btc_returns.std()) * 100
             btc_growth = float((btc_close.iloc[-1] / btc_close.iloc[0] - 1) * 100)
+            btc_running_max = btc_close.cummax()
+            btc_mdd = float(((btc_close - btc_running_max) / btc_running_max).min() * 100)
+            btc_sharpe = float((btc_returns.mean() / btc_returns.std()) * (252 ** 0.5)) if float(btc_returns.std()) > 0 else 0
             volatility_rows.append({
                 "이름": "Bitcoin",
                 "현재 수익률": f"{btc_growth:+.2f}%",
                 "일간 변동성 (std)": f"{btc_vol:.2f}%",
+                "MDD": f"{btc_mdd:.2f}%",
+                "샤프지수": f"{btc_sharpe:.2f}",
                 "_volatility_raw": btc_vol,
                 "_growth_raw": btc_growth,
             })
