@@ -12,12 +12,7 @@ st.set_page_config(page_title="NONE DASHBOARD", page_icon="📈")
 
 # Configuration
 API_URL = os.getenv("API_URL", "http://backend:8001/api/assets")
-START_AMOUNTS = {
-    "KS": float(os.getenv("START_AMOUNT_KS", 2000000)),
-    "DH": float(os.getenv("START_AMOUNT_DH", 10000000)),
-    "BH": float(os.getenv("START_AMOUNT_BH", 2000000)),
-    "YJ": float(os.getenv("START_AMOUNT_YJ", 5000000)),
-}
+BASELINE_DATE = pd.Timestamp("2026-04-06")
 
 st.title("🎢 None Festival")
 st.subheader("Leaderboard: Who is the Growth King? :)")
@@ -65,13 +60,20 @@ if not df.empty:
         df = df.sort_values('id').drop_duplicates(subset=['name', 'date'], keep='last')
     else:
         df = df.drop_duplicates(subset=['name', 'date'], keep='last')
-    
-    # Calculate Growth Rate
-    def calculate_growth(row):
-        start = START_AMOUNTS.get(row['name'], 1)
-        return row['amount'] / start
 
-    df['growth_rate'] = df.apply(calculate_growth, axis=1)
+    # Rebase to BASELINE_DATE: each user's earliest record on/after BASELINE_DATE becomes 1.0
+    df = df[df['date'] >= BASELINE_DATE].copy()
+
+    baselines = {}
+    for name in df['name'].unique():
+        user_df = df[df['name'] == name].sort_values('date')
+        if not user_df.empty:
+            baselines[name] = user_df.iloc[0]['amount']
+
+    df['growth_rate'] = df.apply(
+        lambda r: r['amount'] / baselines[r['name']] if baselines.get(r['name']) else 1.0,
+        axis=1,
+    )
 
     # 1. Leaderboard (Latest Data)
     latest_df = df.sort_values(by='date').groupby('name').tail(1)
@@ -81,8 +83,8 @@ if not df.empty:
     cols = st.columns(len(latest_df))
     for i, (index, row) in enumerate(latest_df.iterrows()):
         with cols[i]:
-            start_amount = START_AMOUNTS.get(row['name'], 1)
-            net_profit = row['amount'] - start_amount
+            baseline = baselines.get(row['name'], row['amount'])
+            net_profit = row['amount'] - baseline
             st.metric(
                 label=f"{i+1}위 {row['name']}",
                 value=f"{(row['growth_rate']-1)*100:.1f}%",
@@ -109,7 +111,7 @@ if not df.empty:
         start_points.append({
             'name': name,
             'date': start_date,
-            'amount': START_AMOUNTS.get(name, 0),
+            'amount': baselines.get(name, 0),
             'growth_rate': 1.0
         })
     
@@ -138,8 +140,8 @@ if not df.empty:
     )
     fig.update_layout(yaxis_ticksuffix="%")
 
-    # KOSPI 200 (KODEX 069500.KS) 비교선 추가
-    KOSPI_START_DATE = "2026-02-01"
+    # KOSPI 200 (KODEX 069500.KS) 비교선 추가 — BASELINE_DATE 기준 정규화
+    KOSPI_START_DATE = BASELINE_DATE.strftime("%Y-%m-%d")
     try:
         kospi_raw = yf.download("069500.KS", start=KOSPI_START_DATE, progress=False, auto_adjust=True)
         if not kospi_raw.empty:
