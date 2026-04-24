@@ -149,7 +149,7 @@ if not df.empty:
             kospi.index = pd.to_datetime(kospi.index)
             kospi.index = kospi.index.tz_localize(None).normalize() + pd.Timedelta(hours=16, minutes=30)
             kospi.columns = ["close"]
-            kospi = kospi.sort_index()
+            kospi = kospi.dropna(subset=["close"]).sort_index()
 
             # 시작일 기준 정규화
             start_price = kospi.iloc[0]["close"]
@@ -179,7 +179,7 @@ if not df.empty:
             usd.index = pd.to_datetime(usd.index)
             usd.index = usd.index.tz_localize(None).normalize() + pd.Timedelta(hours=16, minutes=30)
             usd.columns = ["close"]
-            usd = usd.sort_index()
+            usd = usd.dropna(subset=["close"]).sort_index()
 
             # 시작일 기준 정규화
             usd_start_price = usd.iloc[0]["close"]
@@ -209,7 +209,7 @@ if not df.empty:
             btc.index = pd.to_datetime(btc.index)
             btc.index = btc.index.tz_localize(None).normalize() + pd.Timedelta(hours=16, minutes=30)
             btc.columns = ["close"]
-            btc = btc.sort_index()
+            btc = btc.dropna(subset=["close"]).sort_index()
 
             # 시작일 기준 정규화
             btc_start_price = btc.iloc[0]["close"]
