@@ -53,7 +53,7 @@ except Exception as e:
 
 if not df.empty:
     # Process Data
-    df['date'] = pd.to_datetime(df['date'])
+    df['date'] = pd.to_datetime(df['date']).dt.normalize() + pd.Timedelta(hours=16, minutes=30)
     
     # Keep only the latest entry per user per day
     if 'id' in df.columns:
@@ -147,7 +147,7 @@ if not df.empty:
         if not kospi_raw.empty:
             kospi = kospi_raw[["Close"]].copy()
             kospi.index = pd.to_datetime(kospi.index)
-            kospi.index = kospi.index.tz_localize(None)
+            kospi.index = kospi.index.tz_localize(None).normalize() + pd.Timedelta(hours=16, minutes=30)
             kospi.columns = ["close"]
             kospi = kospi.sort_index()
 
@@ -158,7 +158,7 @@ if not df.empty:
             # 시작점(0.0) 추가
             start_row = pd.DataFrame([{
                 "growth_rate": 0.0
-            }], index=[pd.Timestamp(KOSPI_START_DATE) - pd.Timedelta(days=1)])
+            }], index=[pd.Timestamp(KOSPI_START_DATE) - pd.Timedelta(days=1) + pd.Timedelta(hours=16, minutes=30)])
             kospi = pd.concat([start_row, kospi[["growth_rate"]]]).sort_index()
 
             fig.add_scatter(
@@ -177,7 +177,7 @@ if not df.empty:
         if not usd_raw.empty:
             usd = usd_raw[["Close"]].copy()
             usd.index = pd.to_datetime(usd.index)
-            usd.index = usd.index.tz_localize(None)
+            usd.index = usd.index.tz_localize(None).normalize() + pd.Timedelta(hours=16, minutes=30)
             usd.columns = ["close"]
             usd = usd.sort_index()
 
@@ -188,7 +188,7 @@ if not df.empty:
             # 시작점(0.0) 추가
             usd_start_row = pd.DataFrame([{
                 "growth_rate": 0.0
-            }], index=[pd.Timestamp(KOSPI_START_DATE) - pd.Timedelta(days=1)])
+            }], index=[pd.Timestamp(KOSPI_START_DATE) - pd.Timedelta(days=1) + pd.Timedelta(hours=16, minutes=30)])
             usd = pd.concat([usd_start_row, usd[["growth_rate"]]]).sort_index()
 
             fig.add_scatter(
@@ -207,7 +207,7 @@ if not df.empty:
         if not btc_raw.empty:
             btc = btc_raw[["Close"]].copy()
             btc.index = pd.to_datetime(btc.index)
-            btc.index = btc.index.tz_localize(None)
+            btc.index = btc.index.tz_localize(None).normalize() + pd.Timedelta(hours=16, minutes=30)
             btc.columns = ["close"]
             btc = btc.sort_index()
 
@@ -218,7 +218,7 @@ if not df.empty:
             # 시작점(0.0) 추가
             btc_start_row = pd.DataFrame([{
                 "growth_rate": 0.0
-            }], index=[pd.Timestamp(KOSPI_START_DATE) - pd.Timedelta(days=1)])
+            }], index=[pd.Timestamp(KOSPI_START_DATE) - pd.Timedelta(days=1) + pd.Timedelta(hours=16, minutes=30)])
             btc = pd.concat([btc_start_row, btc[["growth_rate"]]]).sort_index()
 
             fig.add_scatter(
@@ -250,6 +250,7 @@ if not df.empty:
             volatility_rows.append({
                 "이름": name,
                 "현재 수익률": f"{latest_growth:+.2f}%",
+                "일일수익률": "N/A",
                 "일간 변동성 (std)": "N/A",
                 "MDD": "N/A",
                 "샤프지수": "N/A",
@@ -263,9 +264,11 @@ if not df.empty:
         running_max = cumulative.cummax()
         mdd = ((cumulative - running_max) / running_max).min() * 100
         sharpe = (daily_returns.mean() / daily_returns.std()) * (252 ** 0.5) if daily_returns.std() > 0 else 0
+        daily_return = (user_df.iloc[-1]['amount'] / user_df.iloc[-2]['amount'] - 1) * 100
         volatility_rows.append({
             "이름": name,
             "현재 수익률": f"{latest_growth:+.2f}%",
+            "일일수익률": f"{daily_return:+.2f}%",
             "일간 변동성 (std)": f"{volatility:.2f}%",
             "MDD": f"{mdd:.2f}%",
             "샤프지수": f"{sharpe:.2f}",
@@ -284,9 +287,11 @@ if not df.empty:
             kospi_running_max = kospi_close.cummax()
             kospi_mdd = float(((kospi_close - kospi_running_max) / kospi_running_max).min() * 100)
             kospi_sharpe = float((kospi_returns.mean() / kospi_returns.std()) * (252 ** 0.5)) if kospi_returns.std() > 0 else 0
+            kospi_daily_return = float((kospi_close.iloc[-1] / kospi_close.iloc[-2] - 1) * 100) if len(kospi_close) >= 2 else None
             volatility_rows.append({
                 "이름": "KOSPI 200",
                 "현재 수익률": f"{kospi_growth:+.2f}%",
+                "일일수익률": f"{kospi_daily_return:+.2f}%" if kospi_daily_return is not None else "N/A",
                 "일간 변동성 (std)": f"{kospi_vol:.2f}%",
                 "MDD": f"{kospi_mdd:.2f}%",
                 "샤프지수": f"{kospi_sharpe:.2f}",
@@ -307,9 +312,11 @@ if not df.empty:
             usd_running_max = usd_close.cummax()
             usd_mdd = float(((usd_close - usd_running_max) / usd_running_max).min() * 100)
             usd_sharpe = float((usd_returns.mean() / usd_returns.std()) * (252 ** 0.5)) if float(usd_returns.std()) > 0 else 0
+            usd_daily_return = float((usd_close.iloc[-1] / usd_close.iloc[-2] - 1) * 100) if len(usd_close) >= 2 else None
             volatility_rows.append({
                 "이름": "USD/KRW",
                 "현재 수익률": f"{usd_growth:+.2f}%",
+                "일일수익률": f"{usd_daily_return:+.2f}%" if usd_daily_return is not None else "N/A",
                 "일간 변동성 (std)": f"{usd_vol:.2f}%",
                 "MDD": f"{usd_mdd:.2f}%",
                 "샤프지수": f"{usd_sharpe:.2f}",
@@ -330,9 +337,11 @@ if not df.empty:
             btc_running_max = btc_close.cummax()
             btc_mdd = float(((btc_close - btc_running_max) / btc_running_max).min() * 100)
             btc_sharpe = float((btc_returns.mean() / btc_returns.std()) * (252 ** 0.5)) if float(btc_returns.std()) > 0 else 0
+            btc_daily_return = float((btc_close.iloc[-1] / btc_close.iloc[-2] - 1) * 100) if len(btc_close) >= 2 else None
             volatility_rows.append({
                 "이름": "Bitcoin",
                 "현재 수익률": f"{btc_growth:+.2f}%",
+                "일일수익률": f"{btc_daily_return:+.2f}%" if btc_daily_return is not None else "N/A",
                 "일간 변동성 (std)": f"{btc_vol:.2f}%",
                 "MDD": f"{btc_mdd:.2f}%",
                 "샤프지수": f"{btc_sharpe:.2f}",
