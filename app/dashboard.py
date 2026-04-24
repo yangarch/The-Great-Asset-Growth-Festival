@@ -305,10 +305,10 @@ if not df.empty:
     try:
         usd_vol_raw = yf.download("USDKRW=X", start=KOSPI_START_DATE, progress=False, auto_adjust=True)
         if not usd_vol_raw.empty:
-            usd_close = usd_vol_raw["Close"].dropna()
+            usd_close = usd_vol_raw["Close"].squeeze().dropna()
             usd_returns = usd_close.pct_change().dropna()
-            usd_vol = usd_returns.std() * 100
-            usd_growth = (usd_close.iloc[-1] / usd_close.iloc[0] - 1) * 100
+            usd_vol = float(usd_returns.std()) * 100
+            usd_growth = float((usd_close.iloc[-1] / usd_close.iloc[0] - 1) * 100)
             usd_running_max = usd_close.cummax()
             usd_mdd = float(((usd_close - usd_running_max) / usd_running_max).min() * 100)
             usd_sharpe = float((usd_returns.mean() / usd_returns.std()) * (252 ** 0.5)) if float(usd_returns.std()) > 0 else 0
@@ -321,10 +321,10 @@ if not df.empty:
                 "MDD": f"{usd_mdd:.2f}%",
                 "샤프지수": f"{usd_sharpe:.2f}",
                 "_volatility_raw": usd_vol,
-                "_growth_raw": float(usd_growth),
+                "_growth_raw": usd_growth,
             })
-    except Exception:
-        pass
+    except Exception as e:
+        st.warning(f"⚠️ USD/KRW 변동성 계산 실패: {e}")
 
     # Bitcoin 변동성
     try:
