@@ -249,6 +249,35 @@ if not df.empty:
     except Exception as e:
         st.warning(f"⚠️ Bitcoin 데이터를 불러오지 못했습니다: {e}")
 
+    # NAVER (035420.KS) 비교선 추가
+    try:
+        naver_raw = yf.download("035420.KS", start=KOSPI_START_DATE, progress=False, auto_adjust=True)
+        if not naver_raw.empty:
+            naver = naver_raw[["Close"]].copy()
+            naver.index = pd.to_datetime(naver.index)
+            naver.index = naver.index.tz_localize(None).normalize() + pd.Timedelta(hours=16, minutes=30)
+            naver.columns = ["close"]
+            naver = naver.dropna(subset=["close"]).sort_index()
+            naver = ensure_today_bar(naver, "035420.KS")
+
+            naver_start_price = naver.iloc[0]["close"]
+            naver["growth_rate"] = (naver["close"] / naver_start_price - 1) * 100
+
+            naver_start_row = pd.DataFrame([{
+                "growth_rate": 0.0
+            }], index=[pd.Timestamp(KOSPI_START_DATE) - pd.Timedelta(days=1) + pd.Timedelta(hours=16, minutes=30)])
+            naver = pd.concat([naver_start_row, naver[["growth_rate"]]]).sort_index()
+
+            fig.add_scatter(
+                x=naver.index,
+                y=naver["growth_rate"],
+                mode="lines",
+                name="NAVER",
+                line=dict(color="#03C75A", dash="dot", width=2),
+            )
+    except Exception as e:
+        st.warning(f"⚠️ NAVER 데이터를 불러오지 못했습니다: {e}")
+
     # Add horizontal line at 1.0
     fig.add_hline(y=0.0, line_dash="dash", line_color="lightgray", annotation_text="Start")
 
@@ -383,6 +412,31 @@ if not df.empty:
             })
     except Exception:
         pass
+
+    # NAVER 변동성
+    try:
+        naver_vol_raw = yf.download("035420.KS", start=KOSPI_START_DATE, progress=False, auto_adjust=True)
+        if not naver_vol_raw.empty:
+            naver_close = ensure_today_close_series(naver_vol_raw["Close"].squeeze().dropna(), "035420.KS")
+            naver_returns = naver_close.pct_change().dropna()
+            naver_vol = float(naver_returns.std()) * 100
+            naver_growth = float((naver_close.iloc[-1] / naver_close.iloc[0] - 1) * 100)
+            naver_running_max = naver_close.cummax()
+            naver_mdd = float(((naver_close - naver_running_max) / naver_running_max).min() * 100)
+            naver_sharpe = float((naver_returns.mean() / naver_returns.std()) * (252 ** 0.5)) if float(naver_returns.std()) > 0 else 0
+            naver_daily_return = float((naver_close.iloc[-1] / naver_close.iloc[-2] - 1) * 100) if len(naver_close) >= 2 else None
+            volatility_rows.append({
+                "이름": "NAVER",
+                "현재 수익률": f"{naver_growth:+.2f}%",
+                "일일수익률": f"{naver_daily_return:+.2f}%" if naver_daily_return is not None else "N/A",
+                "일간 변동성 (std)": f"{naver_vol:.2f}%",
+                "MDD": f"{naver_mdd:.2f}%",
+                "샤프지수": f"{naver_sharpe:.2f}",
+                "_volatility_raw": naver_vol,
+                "_growth_raw": naver_growth,
+            })
+    except Exception as e:
+        st.warning(f"⚠️ NAVER 변동성 계산 실패: {e}")
 
     if volatility_rows:
         vol_df = pd.DataFrame(volatility_rows).sort_values("_growth_raw", ascending=False)
