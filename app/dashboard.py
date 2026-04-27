@@ -142,6 +142,21 @@ if not df.empty:
 
     # KOSPI 200 (KODEX 069500.KS) 비교선 추가 — BASELINE_DATE 기준 정규화
     KOSPI_START_DATE = BASELINE_DATE.strftime("%Y-%m-%d")
+    TODAY_1630 = pd.Timestamp.now().normalize() + pd.Timedelta(hours=16, minutes=30)
+
+    def ensure_today_bar(close_df, ticker):
+        """yfinance 일봉이 오늘분을 아직 안 내렸을 때 실시간 가격으로 오늘 16:30 바를 보강."""
+        if TODAY_1630 in close_df.index:
+            return close_df
+        try:
+            last_price = yf.Ticker(ticker).fast_info.last_price
+            if last_price is None or pd.isna(last_price):
+                return close_df
+            patch = pd.DataFrame({"close": [float(last_price)]}, index=[TODAY_1630])
+            return pd.concat([close_df, patch]).sort_index()
+        except Exception:
+            return close_df
+
     try:
         kospi_raw = yf.download("069500.KS", start=KOSPI_START_DATE, progress=False, auto_adjust=True)
         if not kospi_raw.empty:
@@ -150,6 +165,7 @@ if not df.empty:
             kospi.index = kospi.index.tz_localize(None).normalize() + pd.Timedelta(hours=16, minutes=30)
             kospi.columns = ["close"]
             kospi = kospi.dropna(subset=["close"]).sort_index()
+            kospi = ensure_today_bar(kospi, "069500.KS")
 
             # 시작일 기준 정규화
             start_price = kospi.iloc[0]["close"]
@@ -180,6 +196,7 @@ if not df.empty:
             usd.index = usd.index.tz_localize(None).normalize() + pd.Timedelta(hours=16, minutes=30)
             usd.columns = ["close"]
             usd = usd.dropna(subset=["close"]).sort_index()
+            usd = ensure_today_bar(usd, "USDKRW=X")
 
             # 시작일 기준 정규화
             usd_start_price = usd.iloc[0]["close"]
@@ -210,6 +227,7 @@ if not df.empty:
             btc.index = btc.index.tz_localize(None).normalize() + pd.Timedelta(hours=16, minutes=30)
             btc.columns = ["close"]
             btc = btc.dropna(subset=["close"]).sort_index()
+            btc = ensure_today_bar(btc, "BTC-USD")
 
             # 시작일 기준 정규화
             btc_start_price = btc.iloc[0]["close"]
@@ -276,11 +294,26 @@ if not df.empty:
             "_growth_raw": latest_growth,
         })
 
+    def ensure_today_close_series(close_series, ticker):
+        today = pd.Timestamp.now().normalize()
+        last_index_date = pd.Timestamp(close_series.index[-1]).tz_localize(None).normalize() if len(close_series) else None
+        if last_index_date == today:
+            return close_series
+        try:
+            last_price = yf.Ticker(ticker).fast_info.last_price
+            if last_price is None or pd.isna(last_price):
+                return close_series
+            patched = close_series.copy()
+            patched.loc[today] = float(last_price)
+            return patched.sort_index()
+        except Exception:
+            return close_series
+
     # KOSPI 200 변동성
     try:
         kospi_vol_raw = yf.download("069500.KS", start=KOSPI_START_DATE, progress=False, auto_adjust=True)
         if not kospi_vol_raw.empty:
-            kospi_close = kospi_vol_raw["Close"].squeeze().dropna()
+            kospi_close = ensure_today_close_series(kospi_vol_raw["Close"].squeeze().dropna(), "069500.KS")
             kospi_returns = kospi_close.pct_change().dropna()
             kospi_vol = float(kospi_returns.std()) * 100
             kospi_growth = float((kospi_close.iloc[-1] / kospi_close.iloc[0] - 1) * 100)
@@ -305,7 +338,7 @@ if not df.empty:
     try:
         usd_vol_raw = yf.download("USDKRW=X", start=KOSPI_START_DATE, progress=False, auto_adjust=True)
         if not usd_vol_raw.empty:
-            usd_close = usd_vol_raw["Close"].squeeze().dropna()
+            usd_close = ensure_today_close_series(usd_vol_raw["Close"].squeeze().dropna(), "USDKRW=X")
             usd_returns = usd_close.pct_change().dropna()
             usd_vol = float(usd_returns.std()) * 100
             usd_growth = float((usd_close.iloc[-1] / usd_close.iloc[0] - 1) * 100)
@@ -330,7 +363,7 @@ if not df.empty:
     try:
         btc_vol_raw = yf.download("BTC-USD", start=KOSPI_START_DATE, progress=False, auto_adjust=True)
         if not btc_vol_raw.empty:
-            btc_close = btc_vol_raw["Close"].squeeze().dropna()
+            btc_close = ensure_today_close_series(btc_vol_raw["Close"].squeeze().dropna(), "BTC-USD")
             btc_returns = btc_close.pct_change().dropna()
             btc_vol = float(btc_returns.std()) * 100
             btc_growth = float((btc_close.iloc[-1] / btc_close.iloc[0] - 1) * 100)
