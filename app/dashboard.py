@@ -15,7 +15,8 @@ API_URL = os.getenv("API_URL", "http://backend:8001/api/assets")
 BASELINE_DATE = pd.Timestamp("2026-04-06")
 
 st.title("🎢 None Festival")
-st.subheader("Leaderboard: Who is the Growth King? :)")
+leaderboard_header = st.empty()
+leaderboard_header.subheader("Leaderboard: Who is the Growth King? :)")
 
 # Fetch Data
 try:
@@ -78,7 +79,11 @@ if not df.empty:
     # 1. Leaderboard (Latest Data)
     latest_df = df.sort_values(by='date').groupby('name').tail(1)
     latest_df = latest_df.sort_values(by='growth_rate', ascending=False)
-    
+
+    # 참가자 전원이 마이너스 수익률이면 우울한 멘트로 교체
+    if not latest_df.empty and (latest_df['growth_rate'] < 1.0).all():
+        leaderboard_header.subheader("Leaderboard: 다 같이 나락으로... 😭 그래도 순위는 매겨야지")
+
     # Display Metrics
     cols = st.columns(len(latest_df))
     for i, (index, row) in enumerate(latest_df.iterrows()):
