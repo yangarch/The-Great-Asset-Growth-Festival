@@ -22,7 +22,7 @@ def delete_all_assets(db: Session = Depends(database.get_db)):
     return {"message": f"Deleted {count} records."}
 
 @app.get("/api/assets", response_model=List[models.AssetResponse])
-def read_assets(skip: int = 0, limit: int = 1000, db: Session = Depends(database.get_db)):
+def read_assets(skip: int = 0, limit: int = 100000, db: Session = Depends(database.get_db)):
     assets = db.query(models.Asset).offset(skip).limit(limit).all()
     return assets
 
